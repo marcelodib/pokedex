@@ -14,27 +14,27 @@
             <!-- input  -->
             <div class="form-group">
                 <label><i class="fas fa-passport"></i> Número do Pokemon</label>
-                <input type="number" name="Number" id="Number" class="form-control" required>
+                <input type="number" name="pokemonNumber" id="pokemonNumber" class="form-control" required>
             </div>
             <!-- input  -->
             <div class="form-group">
                 <label><i class="fas fa-tag"></i> Nome do Pokemon</label>
-                <input type="text" pattern="[A-Za-zÀ-ú0-9 ]{1,64}$" name="Name" id="Name" class="form-control" required>
+                <input type="text" pattern="[A-Za-zÀ-ú0-9 ]{1,64}$" name="pokemonName" id="pokemonName" class="form-control" required>
             </div>
             <!-- input  -->
             <div class="form-group">
                 <label><i class="fas fa-sort-numeric-down"></i> Geração do Pokemon</label>
-                <input type="text" pattern="[A-Za-zÀ-ú0-9 ]{1,64}$" name="Generation" id="Generation" class="form-control" required>
+                <input type="text" pattern="[A-Za-zÀ-ú0-9 ]{1,64}$" name="pokemonGeneration" id="pokemonGeneration" class="form-control" required>
             </div>
             <!-- input  -->
             <div class="form-group">
                 <label><i class="fas fa-fire"></i> Tipos do Pokemon (Inserir separados por virgula)</label>
-                <input type="text" pattern="[A-Za-zÀ-ú0-9,]{1,128}$" name="Types" id="Types" class="form-control" required>
+                <input type="text" pattern="[A-Za-zÀ-ú0-9,]{1,128}$" name="pokemonTypes" id="pokemonTypes" class="form-control" required>
             </div>
             <!-- input  -->
             <div class="form-group">
                 <label><i class="fas fa-sort-numeric-up"></i> Número de Ataques</label>
-                <input type="number" name="NumberAttacks" id="NumberAttacks" class="form-control" required>
+                <input type="number" name="numberAttacks" id="numberAttacks" class="form-control" required>
             </div>
             <button class="btn btn-warning btnLeft text-white" type="submit">Salvar</button>
         </form>
@@ -79,11 +79,11 @@
     function createPokemon() {
 
         const pokemon = {
-            Number       : document.getElementById("Number").value,        /*Atributo que contém o número do pokemon.*/
-            Name         : document.getElementById("Name").value,          /*Atributo que contém o nome do pokemon.*/
-            Types        : document.getElementById("Types").value,         /*Atributo que contém os tipos do pokemon.*/
-            Generation   : document.getElementById("Generation").value,    /*Atributo que contém a geração do pokemon.*/
-            NumberAttacks: document.getElementById("NumberAttacks").value, /*Atributo que contém o número de ataques do pokemon.*/
+            Number       : document.getElementById("pokemonNumber").value,        /*Atributo que contém o número do pokemon.*/
+            Name         : document.getElementById("pokemonName").value,          /*Atributo que contém o nome do pokemon.*/
+            Types        : document.getElementById("pokemonTypes").value,         /*Atributo que contém os tipos do pokemon.*/
+            Generation   : document.getElementById("pokemonGeneration").value,    /*Atributo que contém a geração do pokemon.*/
+            NumberAttacks: document.getElementById("numberAttacks").value, /*Atributo que contém o número de ataques do pokemon.*/
         };
 
         pokemon.Types = pokemon.Types.split(",");
