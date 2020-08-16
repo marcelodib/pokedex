@@ -1,0 +1,224 @@
+<%include ../common/header.ejs%>
+<link rel="stylesheet" type="text/css" href="css/customForm.css">
+
+<!-- CONTENT -->
+<br><br><br><br>
+<div class="container">
+
+    <div class="form-group row">
+        <input class="form-control col-md-7" type="text" id="searchPokemon" onkeyup="searchPokemon()"
+            placeholder="Buscar por nome...">
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <a href="/createPokemon" class="btn btn-warning text-white form-control col-md-4" >Cadastrar Pokemon</a>
+    </div>
+    <br>
+
+    <div class="table-responsive">
+        <table class="table" id="pokemonTable">
+            <thead id="tableHeader">
+                <th>Number</th>
+                <th>Nome</th>
+                <th>Geração</th>
+                <th>Tipos</th>
+                <th>N° Ataques</th>
+                <th>Editar</th>
+                <th>Deletar</th>
+            </thead>
+            <tbody id="pokemonList">
+            </tbody>
+        </table>
+    </div>
+    <div id="loading"></div>
+
+</div>
+<!-- /CONTENT -->
+
+<%include ../common/footer.ejs%>
+
+<script>
+/*============================================================================*/
+    /**
+     * =======================================================
+     * |Função responsável executar todas as rotinas iniciais|
+     * |da página assim que ela é carregada.                 |
+     * =======================================================
+     */
+    window.onload = () => {
+        /*Chamada da função que adiciona o titulo da side bar.*/
+        setSideBarTitle("Pokemons", "fa-list")
+        listPokemon();
+    };
+    $(document).ready(function () {
+        /*Chamada da função que ativa a side bar.*/
+        $('#sidebarCollapse').on('click', function () {
+            $('#sidebar').toggleClass('active');
+        });
+    });
+/*============================================================================*/
+
+/*============================================================================*/
+    /**
+     * =======================================================
+     * |Função responsável realizar o filtro de busca na     |
+     * |tabela de pokemons, utilizando o campo nome como     |
+     * |referência.                                          |
+     * =======================================================
+     */
+    function searchPokemon() {
+        const input = document.getElementById("searchPokemon"); /*Variável que contém o elemento de tela de busca na tabela.*/
+        const filter = input.value.toUpperCase();               /*Variável que contém o valor do campo de busca em upper case.*/
+        const table = document.getElementById("pokemonTable");  /*Variável que contém o elemento de tela da tabela de pokemons.*/
+        const tr = table.getElementsByTagName("tr");            /*Variável que contém os elementos de tela com tag <tr>.*/
+        
+        let txtValue; /*Variável que conterá o texto da posição.*/
+        let td;       /*Variável que conterá o elemento de tela com tag <td>.*/
+        
+        /*Loop responsável por percorrer todas as linhas da tabela procurando pelo valor buscado.*/
+        for (let i = 0; i < tr.length; i++) {
+            /*Atribuição do terceiro item da linha.*/
+            td = tr[i].getElementsByTagName("td")[1];
+            if(td) {
+                /*Atribuição do conteúdo da posição.*/
+                txtValue = td.textContent || td.innerText;
+                /*Verificação se o valor buscado está contido no item.*/
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    /*Torna a linha visível.*/
+                    tr[i].style.display = "";
+                } else {
+                    /*Torna a linha invisível.*/
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+    }
+/*============================================================================*/
+
+/*============================================================================*/
+    /**
+     * ========================================================
+     * |Função responsável por buscar todos os pokemons do    |
+     * |usuário para serem listados.                          |
+     * ========================================================
+     */
+    function listPokemon() {
+        document.getElementById("loading").innerHTML = '<img src="/images/loading.gif" alt="loading">';
+        document.getElementById("pokemonList").innerHTML = "";
+
+        /* Chamada axios para a rota listProject para buscar todos os projetos do usuário.*/
+        axios.post("/listPokemon")
+        .then(function (response) {
+            /* Tratamento do retorno.*/
+            if (response.status === 200 && response.data.status == "success") {
+                /*Variável que contém os projetos retornados pelo servidor.*/
+                const pokemons = response.data.data;
+
+                /*Variável de manipulação do elemento pokemonList.*/
+                const list = document.getElementById("pokemonList");
+
+                /*Loop responsável por renderizar cada projeto na tabela.*/
+                pokemons.forEach(element => {
+                    list.innerHTML += templateListPokemon(element);
+                });
+                document.getElementById("loading").innerHTML = "";
+            }
+        })
+        .catch(function (error) {
+            /*Atribuição da mensagem de retorno do servidor.*/
+            const errorMsg = error.response.data.msg;
+
+            let msg = "";
+
+            /*Verificação se foi enviada mais de uma mensagem.*/
+            if(Array.isArray(errorMsg)) {
+                /*Loop responsável por concatenar todas as mensagens enviadas.*/
+                for (const i in errorMsg) {
+                    msg += errorMsg[i].msg + "\n";
+                }
+            } else {
+                msg = errorMsg
+            }
+            /*Alertar o usuario, caso tenha ocorrido algum erro no servidor*/
+            alert(msg);
+        });
+    }
+/*============================================================================*/
+
+/*============================================================================*/
+    /**
+     * ========================================================
+     * |Função responsável por enviar ao servidor um pedido de|
+     * |remoção de um determinado pokemon do usuário.         |
+     * ========================================================
+     */
+    function deletePokemon(idPokemon) {
+        if(confirm("Você gostaria mesmo de remover esse pokemon?")) {
+            /*Chamada axios para a rota deleteProject para remover um determinado projeto do usuário.*/
+            axios.post("/deletePokemon", {idPokemon: idPokemon})
+            .then(function (response) {
+                /* Tratamento do retorno.*/
+                if (response.status === 200 && response.data.status == "success") {
+                    alert(response.data.msg);
+                    /*Reload da lista de pokemons*/
+                    listPokemon();
+                }
+            })
+            .catch(function (error) {
+                /*Atribuição da mensagem de retorno do servidor.*/
+                const errorMsg = error.response.data.msg;
+
+                let msg = "";
+
+                /*Verificação se foi enviada mais de uma mensagem.*/
+                if(Array.isArray(errorMsg)) {
+                    /*Loop responsável por concatenar todas as mensagens enviadas.*/
+                    for (const i in errorMsg) {
+                        msg += errorMsg[i].msg + "\n";
+                    }
+                } else {
+                    msg = errorMsg
+                }
+                /*Alertar o usuario, caso tenha ocorrido algum erro no servidor*/
+                alert(msg);
+            });
+        }        
+    }
+/*============================================================================*/
+
+/*============================================================================*/
+    /**
+     * =======================================================
+     * |Função responsável por retornar um template html de  |
+     * |um determinado item da tabela, correspondente a um   |
+     * |pokemon.                                             |
+     * =======================================================
+     */
+    function templateListPokemon(pokemon) { 
+        if (pokemon.Name === undefined) return "";
+
+        return `
+            <td>
+                ${pokemon.Number}
+            </td>
+            <td>
+                ${pokemon.Name}
+            </td>
+            <td>
+                ${pokemon.Generation}
+            </td>
+            <td>
+                ${pokemon.Types}
+            </td>
+            <td>${pokemon["Fast Attack(s)"].length + pokemon["Special Attack(s)"].length || pokemon.NumberAttacks}</td>
+            <td>
+                <i class="btn fas fa-edit btn-warning text-white" onClick="editPokemon(${pokemon._id});"></i>   
+            </td>
+            <td>
+                <i class="btn fas fa-trash btn-danger" onClick="deletePokemon(${pokemon._id});"></i>
+            </td>
+        `;
+    }
+/*============================================================================*/
+
+</script>
+
+</html>
