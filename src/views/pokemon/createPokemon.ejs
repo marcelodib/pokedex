@@ -1,0 +1,151 @@
+<%include ../common/header.ejs%>
+
+<link rel="stylesheet" type="text/css" href="css/customForm.css">
+
+<!-- CONTENT -->
+<div class="container">
+
+    <br><br>
+
+    <div class="divCenter">
+        <h3>Cadastrando Novo Pokemon &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</h3>
+        <br>
+        <form action="javascript:createPokemon()" method="POST">
+            <!-- input  -->
+            <div class="form-group">
+                <label><i class="fas fa-passport"></i> Número do Pokemon</label>
+                <input type="number" name="Number" id="Number" class="form-control" required>
+            </div>
+            <!-- input  -->
+            <div class="form-group">
+                <label><i class="fas fa-tag"></i> Nome do Pokemon</label>
+                <input type="text" pattern="[A-Za-zÀ-ú0-9 ]{1,64}$" name="Name" id="Name" class="form-control" required>
+            </div>
+            <!-- input  -->
+            <div class="form-group">
+                <label><i class="fas fa-sort-numeric-down"></i> Geração do Pokemon</label>
+                <input type="text" pattern="[A-Za-zÀ-ú0-9 ]{1,64}$" name="Generation" id="Generation" class="form-control" required>
+            </div>
+            <!-- input  -->
+            <div class="form-group">
+                <label><i class="fas fa-fire"></i> Tipos do Pokemon (Inserir separados por virgula)</label>
+                <input type="text" pattern="[A-Za-zÀ-ú0-9,]{1,128}$" name="Types" id="Types" class="form-control" required>
+            </div>
+            <!-- input  -->
+            <div class="form-group">
+                <label><i class="fas fa-sort-numeric-up"></i> Número de Ataques</label>
+                <input type="number" name="NumberAttacks" id="NumberAttacks" class="form-control" required>
+            </div>
+            <button class="btn btn-warning btnLeft text-white" type="submit">Salvar</button>
+        </form>
+    </div>
+
+    <br><br>
+
+</div>
+<!-- /CONTENT -->
+
+<%include ../common/footer.ejs%>
+
+<script>
+    let countVariables = 1;
+/*============================================================================*/
+    /**
+     * =======================================================
+     * |Função responsável executar todas as rotinas iniciais|
+     * |da página assim que ela é carregada.                 |
+     * =======================================================
+     */
+    window.onload = () => {
+        /*Chamada da função que adiciona o titulo da side bar.*/
+        setSideBarTitle("Pokemon", "fa-plus")
+    };
+    $(document).ready(function () {
+        /*Chamada da função que ativa a side bar.*/
+        $('#sidebarCollapse').on('click', function () {
+            $('#sidebar').toggleClass('active');
+        });
+    });
+/*============================================================================*/
+
+/*============================================================================*/
+    /**
+     * ========================================================
+     * |Função responsável por tratar os dados do formulário e|
+     * |realizar o envio dos dados para o servidor cadastrar  |
+     * |um novo pokemon.                                      |
+     * ========================================================
+     */
+    function createPokemon() {
+
+        const pokemon = {
+            Number       : document.getElementById("Number").value,        /*Atributo que contém o número do pokemon.*/
+            Name         : document.getElementById("Name").value,          /*Atributo que contém o nome do pokemon.*/
+            Types        : document.getElementById("Types").value,         /*Atributo que contém os tipos do pokemon.*/
+            Generation   : document.getElementById("Generation").value,    /*Atributo que contém a geração do pokemon.*/
+            NumberAttacks: document.getElementById("NumberAttacks").value, /*Atributo que contém o número de ataques do pokemon.*/
+        };
+
+        pokemon.Types = pokemon.Types.split(",");
+
+        /*Verificação do nome do Pokemon.*/
+        if(pokemon.Number == undefined || pokemon.Number == null || pokemon.Number == "" || parseInt(pokemon.Number) <= 0) {
+            return alert("Número do Pokemon inválido!");
+        }
+
+        /*Verificação do nome do Pokemon.*/
+        if(pokemon.Name == undefined || pokemon.Name == null || pokemon.Name == "" || pokemon.Name.length > 64) {
+            return alert("Nome do Pokemon inválido!");
+        }
+
+        /*Verificação do nome do Pokemon.*/
+        if(pokemon.Types == undefined || pokemon.Types == null || !Array.isArray(pokemon.Types) || pokemon.Types.length <= 0) {
+            return alert("Tipo do Pokemon inválido!");
+        }
+
+        /*Verificação do nome do Pokemon.*/
+        if(pokemon.Generation == undefined || pokemon.Generation == null || pokemon.Generation == "" || pokemon.Generation.length > 64) {
+            return alert("Geração do Pokemon inválida!");
+        }
+
+        /*Verificação do nome do Pokemon.*/
+        if(pokemon.NumberAttacks == undefined || pokemon.NumberAttacks == null || isNaN(pokemon.NumberAttacks) || pokemon.NumberAttacks <= 0) {
+            return alert("Número de ataques do Pokemon inválido!");
+        }
+
+        /**
+         * Chamada axios para a rota createPokemon para cadastrar um novo pokemon no sistema.
+         */
+        axios.post("/createPokemon", pokemon)
+            .then((response) => {
+                /* Tratamento do retorno.*/
+                if (response.status === 200 && response.data.status == "success") {
+                    /*Alerta o usuário com a mensagem do servidor.*/
+                    alert(response.data.msg);
+                    /*Redireciona para página de listagem de pokemons*/
+                    window.location.href = "/listPokemon";
+                }
+            })
+            .catch((error) => {
+                /*Atribuição da mensagem de retorno do servidor.*/
+                const errorMsg = error.response.data.msg;
+
+                let msg = "";
+
+                /*Verificação se foi enviada mais de uma mensagem.*/
+                if(Array.isArray(errorMsg)) {
+                    /*Loop responsável por concatenar todas as mensagens enviadas.*/
+                    for (const i in errorMsg) {
+                        msg += errorMsg[i].msg + "\n";
+                    }
+                } else {
+                    msg = errorMsg
+                }
+                /*Alertar o usuario, caso tenha ocorrido algum erro no servidor*/
+                alert(msg);
+            });
+    }
+/*============================================================================*/
+</script>
+
+</html>
