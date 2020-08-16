@@ -1,6 +1,5 @@
 # Pokedex
 
-
 ### Ferramentas
 - Frontend web (EJS -> HTML / CSS / JS).
 - Backend web (Node JS - Express).
@@ -18,3 +17,14 @@
 
 ### Link de Acesso
 https://marcelodib-pokedex.herokuapp.com/
+
+
+### Execução Local
+```sh
+$ git clone https://github.com/marcelodib/pokedex.git
+$ cd pokedex
+$ npm install
+$ node app
+```
+### Abrir o navegador na URL
+http://localhost:3000
