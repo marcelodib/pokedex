@@ -19,7 +19,7 @@
 https://marcelodib-pokedex.herokuapp.com/
 
 
-### Execução Local
+## Execução Local
 ```sh
 $ git clone https://github.com/marcelodib/pokedex.git
 $ cd pokedex
